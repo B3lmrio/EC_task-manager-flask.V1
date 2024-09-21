@@ -31,3 +31,14 @@ jobs:
         run: ls -R
       - name: Run tests
         run: pytest $(find . -name dummy.py)
+        
+  bandit:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Perform Bandit Analysis
+        uses: PyCQA/bandit-action@v1

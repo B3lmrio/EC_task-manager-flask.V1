@@ -9,8 +9,8 @@ docker-compose up
 Pipeline
 
 - [x] Etapa de Build
-- [ ] Etapa de Testes automatizados
-- [ ] Bandit
+- [x] Etapa de Testes automatizados
+- [x] Bandit
 - [ ] Dependency-check
 - [ ] Etapa de "Deploy"
 
