@@ -40,5 +40,22 @@ jobs:
       actions: read
       contents: read
     steps:
-      - name: Perform Bandit Analysis
-        uses: PyCQA/bandit-action@v1
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install Bandit
+        run: pip install bandit[sarif]
+
+      - name: Run Bandit and output SARIF
+        run: |
+          bandit -r . --format sarif --output results.sarif
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
