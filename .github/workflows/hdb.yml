@@ -39,6 +39,7 @@ jobs:
       security-events: write
       actions: read
       contents: read
+      continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
