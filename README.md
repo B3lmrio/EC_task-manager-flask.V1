@@ -9,9 +9,9 @@ docker-compose up
 Pipeline
 
 - [x] Etapa de Build
-- [x] Etapa de Testes automatizados
-- [x] Bandit
-- [x] Dependency-check
+- [ ] Etapa de Testes automatizados
+- [ ] Bandit
+- [ ] Dependency-check
 - [ ] Etapa de "Deploy"
 
 # Task-Manager-using-Flask
