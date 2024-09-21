@@ -79,7 +79,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run OWASP Dependency-Check
-        uses: dependency-check/action@v3
+        uses: dependency-check/DependencyCheck-Action@master
         with:
           project: "Task-Manager-using-Flask"
           scan: "."
