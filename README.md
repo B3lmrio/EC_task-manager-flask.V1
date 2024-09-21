@@ -11,7 +11,7 @@ Pipeline
 - [x] Etapa de Build
 - [x] Etapa de Testes automatizados
 - [x] Bandit
-- [ ] Dependency-check
+- [x] Dependency-check
 - [ ] Etapa de "Deploy"
 
 # Task-Manager-using-Flask
