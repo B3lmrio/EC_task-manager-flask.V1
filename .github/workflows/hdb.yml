@@ -39,7 +39,7 @@ jobs:
       security-events: write
       actions: read
       contents: read
-      continue-on-error: true
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,7 +54,7 @@ jobs:
 
       - name: Run Bandit and output SARIF
         run: |
-          bandit -r . --format sarif --output results.sarif
+          bandit -r . --format sarif --output results.sarif || true
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
