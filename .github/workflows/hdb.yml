@@ -102,43 +102,18 @@ jobs:
       issues: write  # Permissão necessária para criar issues
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t flask-app .
-
-      - name: Run Flask app in Docker
+        run: docker build -t task-image .
+      - name: Run application
         run: |
-          docker run -d -p 5000:5000 --name flask-container flask-app
-          sleep 10  # Garantir que o app Flask tenha tempo para iniciar
-
-      # Verificar se o Flask App está rodando
-      - name: List running Docker containers
-        run: docker ps
-
-      # Executar o ZAP Scan
-      - name: ZAP Scan
+          docker run -d -p 5000:5000 --name task-manager task-image
+          sleep 10
+      - name: Zap Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: "http://flask-container:5000"
-          format: "html"  # Especifica o formato do relatório como HTML
-          report: "zap_report.html"  # Especifica o nome e caminho do relatório no diretório atual
-
-      # Listar os arquivos gerados no diretório atual para verificar o relatório
-      - name: List current directory files
-        run: ls -al
-
-      # Upload do relatório do ZAP
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: ZAP Report
-          path: zap_report.html  # Relatório gerado no diretório atual de trabalho
-
-      # Parar o container do Flask app
-      - name: Stop Docker container
-        if: always()
-        run: docker stop flask-container
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: "http://localhost:5000"
         
   # Deploy para ambiente de review
   review:
