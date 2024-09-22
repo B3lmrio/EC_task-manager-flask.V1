@@ -149,61 +149,20 @@ jobs:
 
   # Deploy para estágio
   deploy_stage:
-    needs: [review]
+    needs: dast
+    name: Deploy Stage para Simulação
     runs-on: ubuntu-latest
-    environment:
-      name: staging
-      url: http://staging.example.com  # URL do ambiente de estágio
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Build Docker image for staging
-        run: docker build -t flask-app-stage .
-
-      - name: Deploy to staging
-        run: |
-          docker run -d -p 5002:5000 --name flask-app-stage flask-app-stage
-          sleep 10
-
-      # Executar testes DAST no estágio
-      - name: ZAP Scan on Staging
-        uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: "http://staging.example.com"  # URL do ambiente de estágio
-
-      - name: Upload ZAP Stage Report
-        uses: actions/upload-artifact@v3
+          fetch-depth: 0
+      - name: Run the Action
+        uses: devops-infra/action-pull-request@v0.5.5
         with:
-          name: ZAP Stage Report
-          path: zap_report.html
-
-  # Aprovação manual para produção
-  approval:
-    needs: deploy_stage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Await approval for production
-        uses: hmarr/auto-approve-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          allow-approvals: true
-
-  # Deploy para produção
-  deploy_production:
-    needs: approval
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: http://production.example.com  # URL do ambiente de produção
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image for production
-        run: docker build -t flask-app-production .
-
-      - name: Deploy to production
-        run: |
-          docker run -d -p 80:5000 --name flask-app-production flask-app-production
-          sleep 10
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: Automatic pull request
+          target_branch: staging
+          assignee: ${{ github.actor }}
+          label: automatic
+          get_diff: true
