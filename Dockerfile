@@ -17,8 +17,11 @@ RUN pip install --upgrade pip && \
 # Copia todo o conteúdo do diretório atual para o diretório de trabalho do container
 COPY . .
 
+# Define o diretório /app no PYTHONPATH
+ENV PYTHONPATH=/app
+
 # Define o arquivo principal da aplicação Flask
-ENV FLASK_APP=todo_project/run.py
+ENV FLASK_APP=todo_project.run
 
 # Expõe a porta 5000 para permitir que a aplicação Flask receba conexões
 EXPOSE 5000
