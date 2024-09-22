@@ -1,5 +1,5 @@
-from todo_project import create_app, db
-from todo_project.models import User, Task
+from app import create_app, db
+from app.models import User, Task
 
 @pytest.fixture(scope='module')
 def test_client():
