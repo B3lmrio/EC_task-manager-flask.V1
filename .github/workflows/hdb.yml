@@ -30,7 +30,7 @@ jobs:
       - name: List directory structure
         run: ls -R
       - name: Run tests
-        run: pytest $(find . -name dummy.py)
+        run: pytest $(find . -name testes.py)
         
   bandit:
     needs: test

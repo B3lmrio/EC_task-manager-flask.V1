@@ -1,41 +1,46 @@
-from todo_project import db, app as create_app  # Importação correta
-from todo_project.models import User, Task
 import pytest
+from todo_project import app, db
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def test_client():
-    flask_app = create_app  # Usando 'create_app' como a instância de 'app'
-    with flask_app.test_client() as testing_client:
-        with flask_app.app_context():
-            yield testing_client
+    app_instance.config['TESTING'] = True
+    app_instance.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app_instance.config['WTF_CSRF_ENABLED'] = False  # CSRF desativado para testes
 
-@pytest.fixture(scope='module')
-def init_database(test_client):
-    db.create_all()
+    with app_instance.app_context():  # Garantir que o contexto da aplicação seja criado
+        database.create_all()
+        test_client = app_instance.test_client()
+        yield test_client
+        database.drop_all()
 
-    # Adicionar dados de teste
-    user1 = User(username='testuser1', password='password1')
-    user2 = User(username='testuser2', password='password2')
-    db.session.add(user1)
-    db.session.add(user2)
+def test_basic_workflow(test_client):
+    """Teste básico para criação de usuário, login e criação de tarefa"""
 
-    task1 = Task(content='Test task 1', user_id=1)
-    task2 = Task(content='Test task 2', user_id=2)
-    db.session.add(task1)
-    db.session.add(task2)
+    # 1. Criar um novo usuário
+    response = test_client.post('/register', data={
+        'username': 'basicuser',
+        'password': 'Basic@1234',
+        'confirm_password': 'Basic@1234'
+    }, follow_redirects=True)
+    assert response.status_code == 200  # Verifica se a resposta foi bem-sucedida
 
-    db.session.commit()
+    # 2. Fazer login com o novo usuário
+    response = test_client.post('/login', data={
+        'username': 'basicuser',
+        'password': 'Basic@1234'
+    }, follow_redirects=True)
+    assert response.status_code == 200  # Verifica se a resposta foi bem-sucedida
+    assert b'Task List' in response.data  # Verifica se o login foi bem-sucedido
 
-    yield  # Para rodar os testes
+    # 3. Adicionar uma nova tarefa
+    response = test_client.post('/create_task', data={
+        'task_name': 'Comprar pão'
+    }, follow_redirects=True)
+    assert response.status_code == 200  # Verifica se a resposta foi bem-sucedida
 
-    db.drop_all()
-
-def test_new_user():
-    user = User(username='testuser', password='testpassword')
-    assert user.username == 'testuser'
-    assert user.password == 'testpassword'
-
-def test_home_page(test_client):
-    response = test_client.get('/')
+    # 4. Verificar se a tarefa aparece na lista de tarefas
+    response = test_client.get('/tasks_list', follow_redirects=True)  # Seguir redirecionamentos
     assert response.status_code == 200
-    assert b"Welcome to the Todo App" in response.data
+    # 4. Verificar se a tarefa aparece na lista de tarefas
+    response = client.get('/all_tasks', follow_redirects=True)  # Seguir redirecionamentos
+    assert response.status_code == 200
