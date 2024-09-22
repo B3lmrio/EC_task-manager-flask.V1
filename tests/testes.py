@@ -1,5 +1,5 @@
-from todo_project import create_app, db
-from todo_project.models import User, Task
+from app import db, app as create_app  # O 'app' é tanto a instância quanto a função create_app.
+from todo_project.models import User, Task  # Certifique-se de que o módulo esteja correto.
 
 @pytest.fixture(scope='module')
 def test_client():
