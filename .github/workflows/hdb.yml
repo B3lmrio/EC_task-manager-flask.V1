@@ -19,19 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.x"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest
+          pip install -r requirements.txt
+
       - name: List directory structure
         run: ls -R
+
       - name: Run tests
-        run: pytest $(find . -name dummy.py)
-        
+        run: pytest $(find . -name testes.py)  # Executa o arquivo de testes
+      
   bandit:
     needs: test
     runs-on: ubuntu-latest
@@ -39,7 +44,6 @@ jobs:
       security-events: write
       actions: read
       contents: read
-    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,7 +58,7 @@ jobs:
 
       - name: Run Bandit and output SARIF
         run: |
-          bandit -r . --format sarif --output results.sarif || true
+          bandit -r . --format sarif --output results.sarif
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
@@ -68,14 +72,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.x"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Dependency-Check
         uses: dependency-check/Dependency-Check_Action@main
         id: Dependency-Check
@@ -89,6 +96,7 @@ jobs:
             --scan "requirements.txt"
             --failOnCVSS 7
             --enableRetired
+
       - name: Upload Dependency-Check results
         uses: actions/upload-artifact@v3
         with:
