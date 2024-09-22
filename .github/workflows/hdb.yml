@@ -33,7 +33,7 @@ jobs:
 
       - name: Set PYTHONPATH  # Adicionar o diretório raiz ao PYTHONPATH
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/todo_project
 
       - name: List directory structure
         run: ls -R

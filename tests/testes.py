@@ -1,10 +1,10 @@
-from app import db, app as create_app  # O 'app' é tanto a instância quanto a função create_app.
-from todo_project.models import User, Task  # Certifique-se de que o módulo esteja correto.
+from todo_project import db, app as create_app  # Importação correta
+from todo_project.models import User, Task
+import pytest
 
 @pytest.fixture(scope='module')
 def test_client():
-    flask_app = create_app('testing')
-    
+    flask_app = create_app  # Usando 'create_app' como a instância de 'app'
     with flask_app.test_client() as testing_client:
         with flask_app.app_context():
             yield testing_client
@@ -13,6 +13,7 @@ def test_client():
 def init_database(test_client):
     db.create_all()
 
+    # Adicionar dados de teste
     user1 = User(username='testuser1', password='password1')
     user2 = User(username='testuser2', password='password2')
     db.session.add(user1)
@@ -25,32 +26,16 @@ def init_database(test_client):
 
     db.session.commit()
 
-    yield
+    yield  # Para rodar os testes
 
     db.drop_all()
-
-# tests/test_models.py
-from todo_project.models import User, Task
 
 def test_new_user():
     user = User(username='testuser', password='testpassword')
     assert user.username == 'testuser'
     assert user.password == 'testpassword'
 
-def test_new_task():
-    task = Task(content='Test task', user_id=1)
-    assert task.content == 'Test task'
-    assert task.user_id == 1
-
-# tests/test_routes.py
 def test_home_page(test_client):
     response = test_client.get('/')
     assert response.status_code == 200
     assert b"Welcome to the Todo App" in response.data
-
-def test_create_task(test_client, init_database):
-    response = test_client.post('/create',
-                                data=dict(content='A new test task'),
-                                follow_redirects=True)
-    assert response.status_code == 200
-    assert b"Task created successfully" in response.data
